@@ -1,23 +1,26 @@
 # QVAC-PrivacyVault
 
 ## Description
-A local-first, privacy-preserving AI solution built for the QVAC Hackathon. This project demonstrates on-device AI inference using the QVAC SDK, ensuring zero cloud dependency.
+A local-first, privacy-preserving multilingual AI translation solution built for the QVAC Hackathon. Zero cloud dependency - all inference runs on-device.
+
+## Features
+- 5+ language translation models loaded locally
+- Hindi, French, German, Spanish to English
+- English to Hindi translation
+- Zero cloud API calls
+- Performance logging
 
 ## Hardware Setup
-- Tested on: Mobile (Termux environment)
-- CPU/RAM: Standard retail smartphone specifications.
+- Tested on: Mobile (Termux) + GitHub Codespace
+- No GPU required - CPU inference only
 
-## Setup Instructions
-1. Clone the repository:
-   git clone https://github.com/yogeshkampalliwar/QVAC-PrivacyVault
-2. Install dependencies:
-   npm install
-3. Run the application:
-   node index.js
+## Setup
+1. git clone https://github.com/yogeshkampalliwar/QVAC-PrivacyVault
+2. npm install
+3. node index.js
 
-## Artifacts
-- performance_log.json: Contains inference latency and model loading logs.
-- No third-party cloud AI APIs are used.
+## Privacy
+100% local inference - no data leaves device
 
 ## License
 Apache 2.0

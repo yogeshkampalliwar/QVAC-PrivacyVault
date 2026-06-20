@@ -1,1 +1,13 @@
-{"model":"BERGAMOT_PT_EN","status":"loaded","time":"2026-06-20T13:57:36.460Z"}
+{
+  "models_loaded": 5,
+  "models": {
+    "hi_en": "BERGAMOT_HI_EN",
+    "en_hi": "BERGAMOT_EN_HI",
+    "fr_en": "BERGAMOT_FR_EN",
+    "de_en": "BERGAMOT_DE_EN",
+    "es_en": "BERGAMOT_ES_EN"
+  },
+  "status": "loaded",
+  "time": "2026-06-20T18:11:45.620Z",
+  "privacy": "100% local - zero cloud"
+}
