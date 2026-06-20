@@ -1,13 +1,34 @@
 {
+  "project": "QVAC-PrivacyVault",
   "models_loaded": 5,
   "models": {
-    "hi_en": "BERGAMOT_HI_EN",
-    "en_hi": "BERGAMOT_EN_HI",
-    "fr_en": "BERGAMOT_FR_EN",
-    "de_en": "BERGAMOT_DE_EN",
-    "es_en": "BERGAMOT_ES_EN"
+    "hi_en": {
+      "name": "BERGAMOT_HI_EN",
+      "engine": "nmtcpp-translation",
+      "params": ""
+    },
+    "en_hi": {
+      "name": "BERGAMOT_EN_HI",
+      "engine": "nmtcpp-translation",
+      "params": ""
+    },
+    "fr_en": {
+      "name": "BERGAMOT_FR_EN",
+      "engine": "nmtcpp-translation",
+      "params": ""
+    },
+    "de_en": {
+      "name": "BERGAMOT_DE_EN",
+      "engine": "nmtcpp-translation",
+      "params": ""
+    },
+    "es_en": {
+      "name": "BERGAMOT_ES_EN",
+      "engine": "nmtcpp-translation",
+      "params": ""
+    }
   },
-  "status": "loaded",
-  "time": "2026-06-20T18:11:45.620Z",
-  "privacy": "100% local - zero cloud"
+  "privacy": "100% local - zero cloud dependency",
+  "hardware": "Mobile/CPU inference",
+  "timestamp": "2026-06-20T18:27:17.334Z"
 }
