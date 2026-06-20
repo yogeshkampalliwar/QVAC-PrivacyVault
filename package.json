@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "@qvac/sdk": "^0.13.5",
+    "express": "^5.2.1"
+  },
+  "name": "qvac-privacyvault",
+  "version": "1.0.0",
+  "description": "A local-first, privacy-preserving multilingual AI translation solution built for the QVAC Hackathon. Zero cloud dependency - all inference runs on-device.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yogeshkampalliwar/QVAC-PrivacyVault.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/yogeshkampalliwar/QVAC-PrivacyVault/issues"
+  },
+  "homepage": "https://github.com/yogeshkampalliwar/QVAC-PrivacyVault#readme"
+}
