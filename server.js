@@ -1,5 +1,38 @@
 import express from "express";
-import { loadModel, translate, completion, unloadModel, BERGAMOT_HI_EN, BERGAMOT_EN_HI, BERGAMOT_FR_EN, BERGAMOT_DE_EN, BERGAMOT_ES_EN, LLAMA_3_2_1B_INST_Q4_0 } from "@qvac/sdk";
+import { loadModel, translate, completion, unloadModel, BERGAMOT_HI_EN, BERGAMOT_EN_HI, BERGAMOT_FR_EN, BERGAMOT_DE_EN, BERGAMOT_ES_EN, LLAMA_3_2_1B_INST_Q4_0, QWEN3_1_7B_INST_Q4 } from "@qvac/sdk";
+import { z } from "zod";
+
+const setReminderSchema = z.object({
+  task: z.string().describe("The task or action to be reminded about"),
+  when: z.string().describe("When the reminder is for, e.g. tomorrow, 5pm, next week"),
+});
+
+const flagUrgentSchema = z.object({
+  reason: z.string().describe("Why this message is urgent"),
+});
+
+const agentTools = [
+  {
+    name: "set_reminder",
+    description: "Create a reminder when the message contains a task, appointment, or action item",
+    parameters: setReminderSchema,
+  },
+  {
+    name: "flag_urgent",
+    description: "Flag the message as urgent when it requires immediate attention",
+    parameters: flagUrgentSchema,
+  },
+];
+
+function mockExecuteTool(name, args) {
+  if (name === "set_reminder") {
+    return JSON.stringify({ status: "reminder_created", task: args.task, when: args.when });
+  }
+  if (name === "flag_urgent") {
+    return JSON.stringify({ status: "flagged_urgent", reason: args.reason });
+  }
+  return JSON.stringify({ error: "unknown tool: " + name });
+}
 
 const app = express();
 app.use(express.json());
@@ -16,6 +49,19 @@ const MODELS = {
 
 const loadedModels = {};
 let llmModelId = null;
+let toolModelId = null;
+
+async function ensureToolModel() {
+  if (!toolModelId) {
+    console.log("Loading tool-calling LLM (Llama 3.2 1B Tool Calling)...");
+    toolModelId = await loadModel({
+      modelSrc: QWEN3_1_7B_INST_Q4,
+      modelConfig: { ctx_size: 2048, tools: true },
+    });
+    console.log(`Tool model loaded: ${toolModelId}`);
+  }
+  return toolModelId;
+}
 
 async function ensureLlm() {
   if (!llmModelId) {
@@ -100,6 +146,45 @@ app.post("/api/explain", async (req, res) => {
         tokensPerSecond: final.stats?.tokensPerSecond,
         timeToFirstTokenMs: final.stats?.timeToFirstToken,
         backendDevice: final.stats?.backendDevice,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/agent", async (req, res) => {
+  try {
+    const { translatedText } = req.body;
+    if (!translatedText) return res.status(400).json({ error: "translatedText required" });
+
+    const modelId = await ensureToolModel();
+
+    const history = [
+      { role: "system", content: "You are a helpful assistant with access to tools. You must call the set_reminder tool whenever the user message mentions a task, appointment, deadline, or something to remember. You must call the flag_urgent tool whenever the message sounds urgent. Always use a tool when one applies - do not just respond in text." },
+      { role: "user", content: translatedText },
+    ];
+
+    const run = completion({ modelId, history, stream: false, tools: agentTools });
+    const toolCalls = await run.toolCalls;
+    const stats = await run.stats;
+
+    const executedActions = toolCalls.map((call) => ({
+      tool: call.name,
+      arguments: call.arguments,
+      result: JSON.parse(mockExecuteTool(call.name, call.arguments)),
+    }));
+
+    res.json({
+      detectedActions: executedActions,
+      actionCount: executedActions.length,
+      privacy: "100% local inference - zero cloud calls made",
+      modelUsed: "QWEN3_1_7B_INST_Q4",
+      pipeline: "Bergamot NMT -> Qwen3 1.7B Tool Calling (both on-device)",
+      performance: {
+        tokensPerSecond: stats?.tokensPerSecond,
+        backendDevice: stats?.backendDevice,
       },
     });
   } catch (err) {
