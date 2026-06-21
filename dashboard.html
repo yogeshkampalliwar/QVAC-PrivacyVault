@@ -49,11 +49,13 @@ document.getElementById('models').innerHTML =
     return '<p>✅ ' + e[0] + ': ' + e[1] + ' [Local]</p>';
   }).join('');
 
+const langNames = { hi: "Hindi", en: "English", fr: "French", de: "German", es: "Spanish" };
+
 async function translate() {
   const text = document.getElementById('input').value;
   const model = document.getElementById('model').value;
   const resultDiv = document.getElementById('result');
-  resultDiv.innerHTML = '🔄 Translating locally with QVAC SDK...';
+  resultDiv.innerHTML = '🔄 Translating locally with QVAC SDK (Bergamot NMT)...';
 
   try {
     const res = await fetch('/api/translate', {
@@ -69,7 +71,30 @@ async function translate() {
     resultDiv.innerHTML =
       '✅ Translated: <b>' + data.translatedText + '</b><br>' +
       'Model: ' + models[model] + '<br>' +
-      '🔒 ' + data.privacy;
+      '🔒 ' + data.privacy +
+      '<br><br><i>🧠 Loading on-device AI context analysis (Llama 3.2 1B)...</i>';
+
+    const [fromKey, toKey] = model.split('_');
+    const explainRes = await fetch('/api/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        originalText: text,
+        translatedText: data.translatedText,
+        fromLang: langNames[fromKey] || fromKey,
+        toLang: langNames[toKey] || toKey,
+      })
+    });
+    const explainData = await explainRes.json();
+
+    resultDiv.innerHTML =
+      '✅ Translated: <b>' + data.translatedText + '</b><br>' +
+      'Model: ' + models[model] + '<br>' +
+      '🔒 ' + data.privacy +
+      '<br><br>🧠 <b>AI Context:</b> ' + (explainData.explanation || '(unavailable)') +
+      '<br><span style="font-size:11px;color:#666">Pipeline: ' + (explainData.pipeline || '') +
+      ' | ' + (explainData.performance?.tokensPerSecond?.toFixed(1) || '?') + ' tok/s on ' +
+      (explainData.performance?.backendDevice || '?') + '</span>';
   } catch (err) {
     resultDiv.innerHTML = '❌ Connection error: ' + err.message;
   }
