@@ -133,3 +133,14 @@ No GPU required. CPU inference confirmed working for all three models in the pip
 ## License
 
 Apache 2.0
+
+## Demo Video
+
+🎥 [Watch the demo](https://youtube.com/shorts/DunUaL2JzkQ?si=WqVzUBHvGKTOsRro)
+
+The video shows:
+- Live translation demo (English ↔ Hindi)
+- Tone/context analysis using a local LLM
+- Tool-calling agent detecting reminders and action items
+- Real-time performance stats (tokens/sec, latency) shown on-screen
+- 100% local inference — no internet calls made
