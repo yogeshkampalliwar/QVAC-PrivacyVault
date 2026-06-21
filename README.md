@@ -157,3 +157,11 @@ QVAC-PrivacyVault uses a **3-agent orchestrated pipeline**, not a single monolit
 
 The Express.js server acts as the **orchestrator**, routing data sequentially between agents and aggregating results with live performance telemetry at each stage. This demonstrates multi-agent workflow capability with real tool-calling (not plain text generation) entirely on-device.
 
+
+## Why This Is Different From a Simple Translator
+
+Most local translation demos stop at translation. QVAC-PrivacyVault goes further:
+translation is just the entry point into an **agentic pipeline** that reasons about
+the message (tone/context) and **acts on it** (structured tool-calling for
+reminders/action items) — all without a single byte leaving the device.
+
