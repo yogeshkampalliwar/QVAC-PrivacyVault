@@ -144,3 +144,16 @@ The video shows:
 - Tool-calling agent detecting reminders and action items
 - Real-time performance stats (tokens/sec, latency) shown on-screen
 - 100% local inference — no internet calls made
+
+## Multi-Agent Architecture
+
+QVAC-PrivacyVault uses a **3-agent orchestrated pipeline**, not a single monolithic model call:
+
+| Agent | Role | Model |
+|-------|------|-------|
+| **Agent 1: Translation Agent** | Converts text between language pairs | Bergamot NMT |
+| **Agent 2: Context Agent** | Analyzes tone and intent of translated text | Llama 3.2 1B Instruct |
+| **Agent 3: Action Agent** | Detects actionable items via structured tool calling | Qwen3 1.7B Instruct |
+
+The Express.js server acts as the **orchestrator**, routing data sequentially between agents and aggregating results with live performance telemetry at each stage. This demonstrates multi-agent workflow capability with real tool-calling (not plain text generation) entirely on-device.
+
