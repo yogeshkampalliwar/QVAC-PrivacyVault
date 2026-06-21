@@ -94,7 +94,36 @@ async function translate() {
       '<br><br>🧠 <b>AI Context:</b> ' + (explainData.explanation || '(unavailable)') +
       '<br><span style="font-size:11px;color:#666">Pipeline: ' + (explainData.pipeline || '') +
       ' | ' + (explainData.performance?.tokensPerSecond?.toFixed(1) || '?') + ' tok/s on ' +
-      (explainData.performance?.backendDevice || '?') + '</span>';
+      (explainData.performance?.backendDevice || '?') + '</span>' +
+      '<br><br><i>🤖 Checking for action items (Qwen3 tool-calling agent)...</i>';
+
+    const agentRes = await fetch('/api/agent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ translatedText: data.translatedText })
+    });
+    const agentData = await agentRes.json();
+
+    let agentHtml = '<br><br>🤖 <b>Agent:</b> ';
+    if (agentData.actionCount > 0) {
+      agentHtml += agentData.detectedActions.map(a =>
+        '<span style="color:#0a0">⚡ ' + a.tool + '(' + JSON.stringify(a.arguments) + ')</span>'
+      ).join('<br>');
+    } else {
+      agentHtml += 'No action items detected.';
+    }
+    agentHtml += '<br><span style="font-size:11px;color:#666">Model: ' + (agentData.modelUsed || '') +
+      ' | ' + (agentData.performance?.tokensPerSecond?.toFixed(1) || '?') + ' tok/s</span>';
+
+    resultDiv.innerHTML =
+      '✅ Translated: <b>' + data.translatedText + '</b><br>' +
+      'Model: ' + models[model] + '<br>' +
+      '🔒 ' + data.privacy +
+      '<br><br>🧠 <b>AI Context:</b> ' + (explainData.explanation || '(unavailable)') +
+      '<br><span style="font-size:11px;color:#666">Pipeline: ' + (explainData.pipeline || '') +
+      ' | ' + (explainData.performance?.tokensPerSecond?.toFixed(1) || '?') + ' tok/s on ' +
+      (explainData.performance?.backendDevice || '?') + '</span>' +
+      agentHtml;
   } catch (err) {
     resultDiv.innerHTML = '❌ Connection error: ' + err.message;
   }
